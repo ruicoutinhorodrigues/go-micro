@@ -1,0 +1,134 @@
+version: '3'
+
+services:
+  
+  caddy:
+    image: ruirodriguesdocker/micro-caddy:1.0.11
+    deploy:
+      mode: replicated
+      replicas: 1
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    networks:
+      - go-micro_network
+  
+  front-end:
+    image: ruirodriguesdocker/front-end:1.0.14
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      BROKER_URL: "http://backend"
+    networks:
+      - go-micro_network
+
+  broker-service:
+    image: ruirodriguesdocker/broker-service:1.0.7
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - go-micro_network
+
+  listener-service:
+    image: ruirodriguesdocker/listener-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - go-micro_network
+
+  authentication-service:
+    image: ruirodriguesdocker/authentication-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+        DSN: "host=postgres port=5432 user=postgres password=password dbname=users sslmode=disable timezone=UTC connect_timeout=5"
+    networks:
+      - go-micro_network
+
+  logger-service:
+    image: ruirodriguesdocker/logger-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    networks:
+      - go-micro_network
+
+  mailer-service:
+    image: ruirodriguesdocker/mail-service:1.0.0
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      MAIL_DOMAIN: localhost
+      MAIl_HOST: mailhog
+      MAIL_PORT: 1025
+      MAIL_ENCRYPTION: none
+      MAIL_USERNAME: ""
+      MAIL_PASSWORD: ""
+      FROM_NAME: "John Smith"
+      FROM_ADDRESS: "john.smith@example.com"
+    networks:
+      - go-micro_network
+
+  rabbitmq:
+    image: 'rabbitmq:3.11.5-alpine'
+    deploy:
+      mode: global
+    networks:
+      - go-micro_network
+  
+  mailhog:
+    image: 'mailhog/mailhog:latest'
+    ports:
+      - "8025:8025"
+    deploy:
+      mode: global
+    networks:
+      - go-micro_network
+
+  mongo:
+    image: 'mongo:latest'
+    ports:
+      - "27017:27017"
+    deploy: 
+      mode: global
+    environment:
+      MONGO_INITDB_DATABASE: logs
+      MONGO_INITDB_ROOT_USERNAME: admin
+      MONGO_INITDB_ROOT_PASSWORD: password
+    volumes:
+      - ./db-data/mongo/:/data/db
+    networks:
+      - go-micro_network
+    
+  postgres:
+    image: 'postgres:14.2'
+    ports:
+      - "5432:5432"
+    deploy:
+      mode: replicated
+      replicas: 1
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: users
+    volumes:
+      - ./db-data/postgres/:/var/lib/postgresql/data/
+    networks:
+      - go-micro_network
+
+volumes:
+  caddy_data:
+    external: true
+  caddy_config:
+
+networks:
+  go-micro_network:
+    driver: overlay

@@ -1,0 +1,49 @@
+{
+  "folders": [
+    {
+      "name": "front-end",
+      "path": "front-end"
+    },
+    {
+      "name": "broker-service",
+      "path": "broker-service"
+    },
+    {
+      "name": "authentication-service",
+      "path": "authentication-service"
+    },
+    {
+      "name": "logger-service",
+      "path": "logger-service"
+    },
+    {
+      "name": "mail-service",
+      "path": "mail-service"
+    },
+    {
+      "name": "listener-service",
+      "path": "listener-service"
+    },
+    {
+      "name": "project",
+      "path": "project"
+    }
+  ],
+  "settings": {
+    "cSpell.words": [
+      "amqp",
+      "bson",
+      "dbname",
+      "INITDB",
+      "mailhog",
+      "premailer",
+      "privnet",
+      "protoc",
+      "rabbitmq",
+      "ruirodriguesdocker",
+      "sslmode",
+      "SSLTLS",
+      "verysecret"
+    ]
+  }
+}

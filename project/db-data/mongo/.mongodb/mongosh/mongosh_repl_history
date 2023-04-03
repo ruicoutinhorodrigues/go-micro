@@ -1,0 +1,7 @@
+db.logs.find()
+show collections
+use logs
+show dbs
+db.logs.all
+use logs
+logs
